@@ -1,0 +1,522 @@
+<html>
+	<head>
+		<title>OSpan</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="jspsych-5.0.3/jspsych.js"></script>
+		<script src="jspsych-5.0.3/plugins/jspsych-text.js"></script>
+		<script src="jspsych-5.0.3/plugins/jspsych-button-response.js"></script>
+		<script src="jspsych-5.0.3/plugins/jspsych-button-response-pseiti.js"></script>
+		<script src="jspsych-5.0.3/plugins/jspsych-instructions.js"></script>
+		<script src="jspsych-5.0.3/plugins/jspsych-survey-likert.js"></script>
+		<script src="jspsych-5.0.3/plugins/jspsych-survey-text.js"></script>
+		<script src="jspsych-5.0.3/plugins/jspsych-survey-text_persCode.js"></script>
+		<script src="jspsych-5.0.3/plugins/jspsych-survey-multi-choice.js"></script>
+		<script src="jspsych-5.0.3/plugins/jspsych-single-stim.js"></script>
+		<script src="jspsych-5.0.3/plugins/equations.js"></script>
+		<link href="jspsych-5.0.3/css/jspsych_oSpan2.css" rel="stylesheet" type="text/css"></link>
+			
+	</head>
+	
+	<script>
+		function lettersFx () {
+			letters_trial_x = jsPsych.randomization.repeat(letters, 1),
+			letters_trial_x = letters_trial_x.slice(0,t_SetSize)
+			return letters_trial_x
+		};
+	</script>
+		
+	<script>
+		function eqGenerator () {
+			var eq_array_display = []
+			var eq_array_respCorrect = []
+			for (j = 0; j < nEqs; j++){
+				eqGeneFx_result = eqGeneFx ()
+				display_j = eqGeneFx_result.displayed_equation
+				response_j = eqGeneFx_result.required_response
+				eq_array_display.push(display_j)
+				eq_array_respCorrect.push(response_j);
+			}
+			return {eq_array_display:eq_array_display, eq_array_respCorrect: eq_array_respCorrect}
+		};
+	</script>
+	
+	
+	<script>
+	var trials = [3,3,3,4,4,4,5,5,5,6,6,6,7,7,7]
+	//var trials = [3,4];
+	var trials_seq = jsPsych.randomization.repeat(trials, 1);
+	var nTrials = trials_seq.length;
+	var nPerSetSize = 3;
+	
+	var timeToJudgeEq = 20000;
+	var diffLevel_practice = 4;
+	var diffLevel_oSpan = 12;
+	
+	var rangePracticeSetSize = {min:3,max:4};
+	var rangeOSpanSetSize = {min:3,max:7};
+	var practiceCriterion = 1;
+	
+	var letters = ["F","H","J","K","L","N","P","Q","R","S","T","Y"];
+	
+///////// Intro
+/////////
+	var welcome = {
+			type: 'instructions',
+			pages: [
+					/*"<p class='center-content'> Welcome to the <b style='color:#993300'>Operation Span task</b>! <p> This task has been developed by the two psychologists Turner and Engle in the year 1989 and it is a standard instrument to measure a person's so-called Working Memory Capacity. <p>The notion of 'Working Memory Capacity' refers to your ability to concentrate on a currently important task, such as reading a crime story, and to shield your concentration from any kind of distraction, such as mind wandering or noise coming from a TV. Additionally, it allows you to think of new things based on the attended information, such as trying to imagine the end of the crime story or trying to predict who the murderer might be.<p>However, from our everyday life we all know that it is sometimes very difficult to stay concentrated, especially if we do different things at the same time, so try to be multi tasker. The experience of such difficulties in multi-tasking indicates that there is only a limited amount available of something we could call 'mental resources' and that we need to use them selectively for the important task at hand. And this is for what the notion of Working Memory Capacity (WMC) has been introduced in psychology. <p> The Operation Span task is a simple but accurate way to measure WMC because it simulates a situation, in which you need to perform two tasks at the same time: the first is a math task, where simple arithmetic equations (e.g., 3+5=8) are displayed, on which you have to decide whether the equation is correct or not. The second is a memory task, where a series of before presented letters (e.g., T - Y - K - F) has to be recalled in the order of presentation.<p>Together with three short practice units, which prepare you for the Operation Span task, it will take you about 12-15 minutes to complete the task. <p>Click on the <i>Next</i>-button to get information on our data management."*/
+					"<p class='center-content'> Tere tulemast lahendama <b style='color:#993300'>M&aumllu-&uumllesannet</b>! <p> See m&otilde&otildedab inimese v&otildeimekust keskenduda sellele, mis momendil oluline on. Vaid keskendunult on inimene suuteline meeldej&aumltma uut informatsiooni. Siiski igap&aumleva-elus p&uuml&uumlame sageli teha mitut tegevust &uumlheaegselt - ehk see on n.&ouml. multitasking, mille k&aumligus on raske keskenduda. Sellist &uumlheaegset informatsiooni t&ouml&oumltlemist ja meeldej&aumltmise ulatust m&otilde&otildedabki k&aumlesolev &uumllesanne. <br> Siin on loodud olukord, kus sa pead kahte asja &uumlheaegselt tegema: <br> Esiteks kontrollima kas vastus on &otildeige (n&aumliteks 3 + 5 = 8).<br> Teiseks j&aumltma meelde ekraanile ilmuvad t&aumlhed (T - Y - K). <p> Kliki <i>EDASI</i>, et lugeda andmete kasutamise kohta."],
+					//"<p class='center-content'> Welcome to the <b style='color:#993300'>Operation Span task</b>! <p> From our everyday life, we all know that it is difficult to attend to different things at the same time, so to be multi tasker. <br> The present task is a simple way to tap and measure such multi-tasking ability. It simulates a situation, in which you need to perform two tasks in parallel. In the 'math task' you have to decide whether simple arithmetic equations (e.g., 3+5=8) are correct or not. In the 'memory task', a series of letters is presented (e.g., T - Y - K - F) and has to be recalled in the order of presentation.<p>It will take you about 12-15 minutes to complete it and some preceding practice trials. <p>Click on the <i>Next</i>-button to get information on our data management."],
+			show_clickable_nav: true
+			};
+	var informedConsent = {
+		type: 'survey-multi-choice',
+		questions: ["<p> <b>Uuringu andmete t&ouml&oumltlemine ja informeeritud n&otildeusolek</b> <p> <i> Vabatahtlik </i> <br> Sa v&otildeid loobuda osalemise n&otildeusolekust igal ajal ilma, et peaksid seda selgitama. <p> <i> Andmed </i> <br>K&otildeik vajalikud andmed salvestuvad eksperimendi l&otildepuks sinu arvuti kaustas dowloads. <p> <i> Andmete kaitsmine</i> <br> K&otildeik andmed on anon&uuml&uumlmsed. See t&aumlhendab, et sinu eksperimendi tulemusi ei ole v&otildeimalik sinu isikuga seostada. Seos sinu personaalse koodiga (mille saad luua j&aumlrgmisel lehel) kustutatakse koheselt peale andmete kogumist. <p> <i> Tulemuste kasutamine </i> <br> Antud uuringu andmeid kasutatakse teadusliku artikli publitseerimiseks, kus on tagatud osalejate anon&uuml&uumlmsus. T&aumlielikult anon&uuml&uumlmsed andmed s&aumlilitatakse andmete arhiivis: <i> PsychData (Research Data for Psychology, Leibnitz Institute for Psychology Information ZPID) </i> <b> <br> <br> <p> N&otildeustumise kinnitamiseks vajuta <i>Edasta n&otildeusolek</i>. Mitten&otildeustumise korral kliki klaviatuuril <i></i> Escape"],
+		//["<p> <b>Data Management & Informed Consent</b> <p> <i> Voluntariness </i> <br> You may revoke your consent to participate at any time and without stating any reasons. <p> <i> Storage of data </i> <br>All your data will be written automatically to a database on a server of Tallinn University. <p> <i> Protection of data privacy </i> <br> The entire dataset will be made fully anonymous, which means that your data cannot be related to you as an individual. <p> <i> Usage of anonymized data </i> <br> The results and data from this study will be used for a scientific publication. Anonymity of the participants will be ensured in this process. The fully anonymized data from this study will be made accessible as open data on the internet via the data archive <i> PsychData (Research Data for Psychology, Leibnitz Institute for Psychology Information ZPID) </i> <b> <br> <br> <p> If you agree on our data management, click the radio button below and hit <i>Submit Answer</i>. Otherwise, press <i>Escape</i> on your keyboard to exit the environment."],
+		options: [["K&aumlesolevaga kinnitan, et olen l&aumlbi lugenud, aru saanud ja n&otildeustun eksperimendi tingimustega."]],
+		required: [true]
+    };
+
+	var persData_code = ["<p> Loo siia ise oma kood:"];
+	var demographics = {
+	  		type: "survey-text-persCode",
+	  		questions: persData_code,
+			preamble: "<b><b>Kuidas koodi luua</b>: <br> 1: Esimene t&aumlht sinu ema nimest <br> 2: Esimene t&aumlht sinu isa nimest <br> 3: Kaks viimast numbrit sinu s&uumlnniaastast <br> 4: Esimene t&aumlht sinu kodu-aadressi t&aumlnavanimes <br> 5: Esimene number sinu kodu-maja numbris <p> N&aumlide: FC84M4"
+		//How to generate your code</b>: <br>Position 1: First letter of your mother's surname <br> Position 2: First letter of your father's surname <br> Positions 3 and 4: Your year of birth <br> Position 5: The first letter of your residential street <br> Position 6: The first digit of your street number <p> Example: FC84M4"
+	};
+	
+	
+///////// Practice
+	var practice_overview = {
+		type: 'instructions',
+		pages: ["<p>***</p>Enne katse sooritamist saad sa l&aumlbida 3 l&uumlhikest harjutamise ts&uumlklit, <br><b></b> mis selgitavad sulle &uumllesandeid samm-sammult:<p><b>Osa 1</b>: Arvutamise harjutamine<br><b>Osa 2</b>: Meeldej&aumltmise harjutamine<br><b>Osa 3</b>: M&otildelema &uumllesande &uumlhe-aegselt harjutamine<p>***</p>Kliki <i>EDASI</i>, et alustada harjutamist."],
+		//["<p>***</p>Before performing the Operation Span task, you will be guided through 3 short practice units, explaining the task step by step:<p><b>Unit 1</b>: Math task<br><b>Unit 2</b>: Memory task<br><b>Unit 3</b>: Both tasks simultaneously<p>***</p>Click <i>Next</i> to enter the first practice unit."],
+		show_clickable_nav: true,
+	};
+///////// Practice Solve
+	var intro_solve_practice = {
+			type: 'instructions',
+			pages: function(){return ["<p class='center-content'><b>Arvutamine<br><b></b><br><b></b> Juhend:</b></p> Sulle n&aumlidatakse erinevaid matemaatika tehteid, <p><b>N&aumlidis:</b><br> <img src='img_oSpan/mathTaskExample_est.jpg'></img> <p> kus sinu &uumllesandeks on hinnata, kas tehte vastus on &otildeige v&otildei mitte. Kliki vastavalt kas <i>EI</i> v&otildei <i>JAH</i> variandil. Ts&uumlkli edukaks l&aumlbimiseks peab &uumlle 85% sinu vastustest olema &otildeiged. <p> Alustamiseks kliki EDASI."]},
+			show_clickable_nav: true,
+			on_finish: function(data) { 
+				i = 0
+				t_SetSize = getRndInteger(rangePracticeSetSize.min,rangePracticeSetSize.max)
+				successCountr = 0
+				required_Eq_Responses_trialx = []
+				provided_Eq_Responses_trialx = []
+				required_Eq_Responses_trialx_labels = []
+				provided_Eq_Responses_trialx_labels = []
+				numberEqsCorrect = 0
+				nEqs = t_SetSize
+				diff_level=diffLevel_practice
+				equations_and_responses_trialx = eqGenerator()
+			},
+	};
+	
+	var solve_buttons = [ ["EI"] , ["JAH"] ]
+	var solve = {
+	    type: 'button-response',
+		is_html: true, 
+		stimulus: function(){ var eq_Stimulus = equations_and_responses_trialx.eq_array_display[i]; return [ "<p>Kas see vastus on &otildeige? </p> <b>"+eq_Stimulus+"" ]},
+	    choices: solve_buttons,
+		timing_response: timeToJudgeEq,
+		response_ends_trial: true,
+  	  	timing_post_trial: 500,
+ 	   	on_finish: function(data){
+			required_Eq_Responses_curTrial = equations_and_responses_trialx.eq_array_respCorrect[i]
+ 		   	required_Eq_Responses_trialx.push(required_Eq_Responses_curTrial)
+			b_pressed = data.button_pressed
+			provided_Eq_Responses_trialx.push(b_pressed)
+			provided_Eq_Responses_trialx_labels.push(solve_buttons[b_pressed])
+			required_Eq_Responses_trialx_labels.push(solve_buttons[required_Eq_Responses_curTrial])
+			if(required_Eq_Responses_curTrial==b_pressed){numberEqsCorrect += 1}
+			i += 1
+ 	   	},
+	};
+	var solve_loop_practice = {
+		timeline: [solve],
+		loop_function: function(data){
+		        
+				if(i < t_SetSize){
+		            return true;
+		        } else {
+		            return false;
+		        }
+		  },
+	};
+	
+	var feedback_solve_0 = {
+		type: 'instructions',
+		pages: [ "<p>***</p><p><p class='center-content'>Harjutamise ts&uumlkkel on l&aumlbi.<br><b></b> Kliki <i>EDASI</i>, et n&aumlha oma soorituse taset." ],
+		//[ "<p>***</p><p><p class='center-content'>The trial is over. Click <i>Next</i> to review your performance." ],
+		show_clickable_nav: true,
+		data: function(){var solve_accuracy = numberEqsCorrect/t_SetSize;return{ displayedEqs: equations_and_responses_trialx.eq_array_display, required_Eq_Responses: required_Eq_Responses_trialx, provided_Eq_Responses: provided_Eq_Responses_trialx, nEqs: t_SetSize, nEqsCorrect: numberEqsCorrect, solve_accuracy: solve_accuracy}},
+		on_finish: function(data) { 
+			displayedEqs = equations_and_responses_trialx.eq_array_display
+			accuracy = numberEqsCorrect/t_SetSize
+			if(accuracy>0.85){successCountr += 1; feedback = "L&aumlbisid harjutamis-ts&uumlkli edukalt! Vastasid &uumlle 85% &otildeigesti."}else{feedback = "Palun p&uuml&uumla edasi vastata &uumlle 85% &otildeigesti."}
+		},
+	};
+	var feedback_solve_1 = {
+			type: 'instructions',
+			pages: [ function(){ return "<b>Sinu sooritus:</b><p>Sulle esitatud tehted olid: <br><b>" +displayedEqs.join("<br>")+" </b> <br> &Otildeiged vastused neile olid: <b>"+required_Eq_Responses_trialx_labels.join(", ")+"</b><br> Sinu antud vastused olid: <b>"+provided_Eq_Responses_trialx_labels.join(", ")+"</b><br>Sinu vastuste korrektsus: <b>"+Math.round(accuracy*100)+"%</b><p><b> Kokkuv&otildete: </b>"+feedback+""}],
+			//pages: [ function(){ return "<b>Trial review:</b><p>The presented questions were: <br><b>" +displayedEqs.join("<br>")+" </b> <br> Correct responses: <b>"+required_Eq_Responses_trialx_labels.join(", ")+"</b><br> Your responses: <b>"+provided_Eq_Responses_trialx_labels.join(", ")+"</b><br>Accuracy: <b>"+Math.round(accuracy*100)+"%</b><p><b> Summary: </b>"+feedback+""}],
+			show_clickable_nav: true,
+	};
+	var feedback_solve_2 = {
+			type: 'instructions',
+			pages: [function(){if(successCountr==practiceCriterion){return "<p>***</p><b>Tubli!</b><p>Oled edukalt l&aumlbinud harjutamise ts&uumlkli. J&aumltkamiseks kliki EDASI.  <p>"}else{return "<p>***</p>Sa pead veel harjutama! <br> Kliki EDASI, et alustada uut ts&uumlklit.<p>"}}],
+			show_clickable_nav: true,
+			//pages: [function(){if(successCountr==practiceCriterion){return "<p>***</p><b>Very good!</b><p>You have completed this practice unit. Click Next to continue.<p>"}else{return "<p>***</p>You still need to complete "+(practiceCriterion-successCountr)+" successful practice trial(s). Click next to start a new one.<p>"}}],
+			show_clickable_nav: true,
+			data: function(){return{nEqs: t_SetSize, nEqsCorrect: numberEqsCorrect }},
+			on_finish: function(data) { 
+				i = 0
+				t_SetSize = getRndInteger(rangePracticeSetSize.min,rangePracticeSetSize.max)
+				numberEqsCorrect = 0
+				required_Eq_Responses_trialx = []
+				provided_Eq_Responses_trialx = []
+				required_Eq_Responses_trialx_labels = []
+				provided_Eq_Responses_trialx_labels = []
+				nEqs = t_SetSize
+				diff_level=diffLevel_practice
+				equations_and_responses_trialx = eqGenerator()
+			},
+	};
+	
+	var solve_loop_practice2 = {
+		timeline: [solve_loop_practice,feedback_solve_0,feedback_solve_1,feedback_solve_2],
+		loop_function: function(data){
+		        
+				if(successCountr==practiceCriterion){
+		            return false;
+		        } else {
+		            return true;
+		        }
+		  },
+	};
+
+///////// Practice Recall
+	var intro_recall_practice = {
+			type: 'instructions',
+			pages: function(){return ["<p class='center-content'><b>Meeldej&aumltmise &uumllesanne<br><b></b><br><b></b> Juhend:</b></p> Kohe kui oled klikkinud <i>EDASI</i> ilmub ekraani keskele <b>+</b> m&aumlrk. Seej&aumlrel ilmuvad samale kohale &uumlhe-kaupa erinevad t&aumlhed, iga t&aumlht on n&aumlhtav &uumlks sekund. P&uuml&uumla need samas j&aumlrjestuses meelde j&aumltta. Ts&uumlkli l&otildepus kliki nendel t&aumlhtedel, mis meelde j&aumlid ning samas j&aumlrjestuses nagu sulle esitati.</p> Ts&uumlkli edukaks l&aumlbimiseks on vaja meenutada k&otildeik t&aumlhed &otildeiges j&aumlrjekorras. Mittevastav (meenutades v&aumlhem v&otildei rohkem t&aumlhti, v&otildei vales j&aumlrjekorras) loetakse valeks. </p><p class='center-content'> Kliki <i>EDASI</i> ja alusta harjutamist.</p><p>"]},
+			show_clickable_nav: true,
+			//pages: function(){return ["<p class='center-content'><b>Memory task: Instruction</b></p> After clicking the <i>Next</i>-Button, a plus-sign <b>+</b> will appear, followed by consecutively presented letters (about 1 second per letter). After the last letter, you will be asked to recall them in the order of presentation.</p> Any mistake (recalling too many or too few, or recalling them in the wrong order) counts as incorrect. </p><p class='center-content'> Click <i>Next</i> to start practicing.</p><p>"]},
+			show_clickable_nav: true,
+			on_finish: function(data) { 
+				i = 0; // letter index, presentation
+				t_SetSize = getRndInteger(rangePracticeSetSize.min,rangePracticeSetSize.max)
+				letters_trial_x = lettersFx();
+				successCountr = 0;
+			},
+	};
+	
+	var plusSign = {
+  	  	type: "single-stim",
+		stimulus: "<p><p><b>+",
+  	  	choices: [100], timing_response: 1200, data: {phase: 'remember'},
+  	  	is_html: true
+	};
+	var remember = {
+  	  	type: "single-stim",
+		stimulus: function(){return "<p><p><b>"+letters_trial_x[i]+""},
+  	  	choices: [100], timing_response: 1200, data: {phase: 'remember'},
+  	  	is_html: true,
+ 	   	on_finish: function(data){
+ 		   	i += 1
+ 	   	},
+		
+	};
+	
+	var remember_loop = {
+		timeline: [remember],
+		loop_function: function(data){
+		        
+				if(i < t_SetSize){
+		            return true;
+		        } else {
+		            return false;
+		        }
+		  },
+	};
+	
+	var recall = {
+  		type: 'button-response-pseiti',
+  		is_html: true,
+		stimulus: function(){return ["Kliki ainult nendel, mida \xE4sja n\xE4gid ja samas j\xE4rjestuses nagu sulle esitati!"]},
+		//stimulus: function(){return ["Click on the letters according to the order of their presentation!"]},
+		showEndButton: true,
+		presentedItems: function(){return letters_trial_x},
+		choices: [["F"],["H"],["J"],["K"],["L"],["N"],["P"],["Q"],["R"],["S"],["T"],["Y"]],
+		response_ends_trial: false,
+		on_finish: function(data) { 
+			nPresentedLetters = data.nPresentedLetters
+			b_pressed = data.button_pressed
+			letters_clicked = data.clickedLetters
+			numberLettersIncorrect = data.numberLettersIncorrect
+			presentedItems = data.presentedItems
+			numberLettersCorrect = data.numberLettersCorrect
+			numberLettersIncorrect = data.numberLettersIncorrect
+			correctLetters = data.correctLetters
+			incorrectLetters = data.incorrectLetters
+			recall_accuracy = data.accuracy
+		},	
+	};
+	
+	
+	var feedback_recall_0 = {
+		type: 'instructions',
+		pages: [ "<p>***</p><p><p class='center-content'>See ts&uumlkkel sai l&aumlbi. Kliki <i>EDASI</i>, et n&aumlha oma tulemust." ],
+		//pages: [ "<p>***</p><p><p class='center-content'>The trial is over. Click <i>Next</i> to review your performance." ],
+		show_clickable_nav: true,
+		data: function(){return{presentedItems: presentedItems, letters_clicked: letters_clicked, nLettersPresented: t_SetSize, nLettersCorrect: numberLettersCorrect, nLettersIncorrect: numberLettersIncorrect, recall_accuracy: recall_accuracy}} ,
+		on_finish: function(data) { 
+			if(recall_accuracy==1){successCountr += 1; feedback = "Tubli! Meenutasid k&otildeik esitatud t&aumlhed ning &otildeiges j&aumlrjekorras."}else{feedback = "P&uuml&uumla meenutada t&aumlhed samas j&aumlrjekorras nagu need esitati."}
+			//if(recall_accuracy==1){successCountr += 1; feedback = "This was a successful trial! You have recalled all letters in the correct order."}else{feedback = "Please try to recall the presented letters in the order of their presentation."}
+			if(numberLettersCorrect==0){correctLetters=["mitte &uumlhtegi"]}
+			if(numberLettersIncorrect==0){incorrectLetters=["mitte &uumlhtegi"]}
+		},
+	};
+	
+	var feedback_recall_1 = {
+			type: 'instructions',
+			pages: [ function(){return "<b>Tulemus:</b><p> Esitatud t&aumlhed olid: <b>" +letters_trial_x.join(", ")+" </b> <br> Sinu meenutatud: <b>"+letters_clicked.join(", ")+" </b><p>&Otildeiged: <b>"+correctLetters.join(", ")+"</b><br>Valed: <b>"+incorrectLetters.join(", ")+"</b><br>Sinu korrektsed vastuseid: <b>"+numberLettersCorrect+"</b><br>Sinu valed vastused: <b>"+numberLettersIncorrect+"</b></br><p>Korrektsus: <b>"+Math.round(recall_accuracy*100)+"%</b></p><p>***<b><br>Kokkuv&otildete: </b>"+feedback+""}],
+			//pages: [ function(){return "<b>Trial review:</b><p>The presented letters were: <b>" +letters_trial_x.join(", ")+" </b> <br> Your choices were: <b>"+letters_clicked.join(", ")+"</b><p>Correct letters: <b>"+correctLetters.join(", ")+"</b><br>Incorrect letters (not presented, wrong position, or left out): <b>"+incorrectLetters.join(", ")+"</b><br>Number correct: <b>"+numberLettersCorrect+"</b><br>Number incorrect: <b>"+numberLettersIncorrect+"</b></br><p>Recall accuracy: <b>"+Math.round(recall_accuracy*100)+"%</b></p><p>***<b><br>Summary: </b>"+feedback+""}],
+			show_clickable_nav: true,
+			on_finish: function(data) { 
+				
+			},
+	};
+	
+	var feedback_recall_2 = {
+			type: 'instructions',
+			pages: [function(){if(successCountr==practiceCriterion){return "<p>***</p><b> Tubli!</b> <p>L&aumlbisid harjutamise ts&uumlkli edukalt. Kliki <i>EDASI</i> et j&aumltkata.<p>"}else{return "<p>***</p>Sa pead veel "+(practiceCriterion-successCountr)+" ts&uumlklit harjutama. Kliki EDASI, et alustada uut harjutamist.<p>"}}],
+			show_clickable_nav: true,
+			//pages: [function(){if(successCountr==practiceCriterion){return "<p>***</p><b>Very good!</b> <p>You have completed this practice unit. Click <i>Next</i> to continue.<p>"}else{return "<p>***</p>You still need to complete "+(practiceCriterion-successCountr)+" successful practice trial(s). Click next to start a new one.<p>"}}],
+			show_clickable_nav: true,
+			on_finish: function(data) { 
+				i = 0;
+				t_SetSize = getRndInteger(rangePracticeSetSize.min,rangePracticeSetSize.max)
+				letters_trial_x = lettersFx()
+			},
+	};
+	
+	var recall_practice_loop2 = {
+		timeline: [plusSign,remember_loop,recall,feedback_recall_0,feedback_recall_1,feedback_recall_2],
+		loop_function: function(data){
+				if(successCountr==practiceCriterion){
+		            return false;
+		        } else {
+		            return true;
+		        }
+		  },
+	};
+
+
+///////// Practice Recall-Solve
+	
+	var intro_SR_practice = {
+			type: 'instructions',
+			pages: function(){return ["<p><b>M&aumllu-&uumllesande harjutamine </b></p> Juhend:</b></p> J&aumlrgnevalt pead sa sooritama kahte asja &uumlheaegselt. <p class='center-content'> Kordam&ouml&oumlda vahelduvad arvutamis-tehted ning t&aumlhed, mida meeldej&aumltta. L&otildepus palutakse sul meenutada k&otildeik t&aumlhed &otildeiges j&aumlrjekorras. <p class='center-content'>Kliki <i>EDASI</i>, et alustada harjutamist."]},
+			//pages: function(){return ["<p><b>Practicing the Operation Span task: Instruction</b></p> In the following, you have to perform the two tasks simultaneously. <p class='center-content'> In each trial, the math and memory tasks alternate, and after a series of alternations, you have to recall all the letters from the trial. <p class='center-content'>Click <i>Next</i> to start practicing."]},
+			show_clickable_nav: true,
+			on_finish: function(data) {
+				i = 0
+				t_SetSize = getRndInteger(rangePracticeSetSize.min,rangePracticeSetSize.max)
+				successCountr = 0
+				// variables of solve task
+				required_Eq_Responses_trialx = []
+				provided_Eq_Responses_trialx = []
+				required_Eq_Responses_trialx_labels = []
+				provided_Eq_Responses_trialx_labels = []
+				numberEqsCorrect = 0
+				nEqs = t_SetSize
+				diff_level=diffLevel_practice
+				equations_and_responses_trialx = eqGenerator()
+				// variables of remember task
+				letters_trial_x = lettersFx();
+			},
+	};
+	
+	var solve_SR = {
+	    type: 'button-response',
+		is_html: true, 
+		stimulus: function(){ var eq_Stimulus = equations_and_responses_trialx.eq_array_display[i]; return [ "<p>Kas see vastus on &otildeige? </p> <b>"+eq_Stimulus+"" ]},
+	    choices: solve_buttons,
+		timing_response: timeToJudgeEq,
+  	  	response_ends_trial: true,
+  	  	timing_post_trial: 500,
+ 	   	on_finish: function(data){
+			required_Eq_Responses_curTrial = equations_and_responses_trialx.eq_array_respCorrect[i]
+ 		   	required_Eq_Responses_trialx.push(required_Eq_Responses_curTrial)
+			b_pressed = data.button_pressed
+			provided_Eq_Responses_trialx.push(b_pressed)
+			provided_Eq_Responses_trialx_labels.push(solve_buttons[b_pressed])
+			required_Eq_Responses_trialx_labels.push(solve_buttons[required_Eq_Responses_curTrial])
+			if(required_Eq_Responses_curTrial==b_pressed){numberEqsCorrect += 1}
+ 	   	},
+	};
+	
+	var SR_loop = {
+		timeline: [solve_SR,remember],
+		loop_function: function(data){
+		        
+				if(i < t_SetSize){
+		            return true;
+		        } else {
+		            return false;
+		        }
+		  },
+	};
+	var feedback_SR_0 = {
+			type: 'instructions',
+			pages: [ "<p>***</p><p><p class='center-content'>Harjutamise ts&uumlkkel sai l&aumlbi. Kliki  <i>EDASI</i>, et n&aumlha oma tulemust."],
+			show_clickable_nav: true,
+			data: function(){var solve_accuracy = numberEqsCorrect/t_SetSize;return{ displayedEqs: equations_and_responses_trialx.eq_array_display, required_Eq_Responses: required_Eq_Responses_trialx, provided_Eq_Responses: provided_Eq_Responses_trialx, nEqs: t_SetSize, nEqsCorrect: numberEqsCorrect, solve_accuracy: solve_accuracy, presentedItems: presentedItems, letters_clicked: letters_clicked, nLettersPresented: t_SetSize, nLettersCorrect: numberLettersCorrect, nLettersIncorrect: numberLettersIncorrect, recall_accuracy: recall_accuracy, summary: "summary_practice"}},
+			on_finish: function(data) { 
+				displayedEqs = equations_and_responses_trialx.eq_array_display;
+				accuracy = numberEqsCorrect/t_SetSize
+				if(accuracy>0.85){f1 = 1}else{f1 = 0}
+				if(recall_accuracy==1){f2 = 1}else{f2 = 0}
+				if((f1+f2)==2){successCountr += 1; feedback = "Tubli! L&aumlbisid ts&uumlkli edukalt."}else{
+				//if((f1+f2)==2){successCountr += 1; feedback = "Well done! This was a succesful trial."}else{
+					if((f1+f2)==0){feedback = "P&uuml&uumla olla t&aumlpsem m&otildelemas &uumllesandes, nii arvutamisel kui t&aumlhtede meeldej&aumltmisel."}else{
+						if(f1==1){feedback = "Arvutamisel oled sa t&aumlpne. Siiski, p&uuml&uumla ka meenutada k&otildeik esitatud t&aumlhed ning &otildeiges j&aumlrjekorras."}else{
+							feedback = "T&aumlhtede meenutamisel oled sa t&aumlpne. Siiski, p&uuml&uumla olla ka arvutamisel t&aumlpsem."
+						}
+					}
+				}
+			},
+	};
+	var feedback_SR_1 = {
+			type: 'instructions',
+			pages: [ function(){return "<p><b>Meenutamise tulemus:</b><p>T&aumlhed, mis esitati: <b>" +letters_trial_x.join(", ")+" </b> <br> Sinu meenutatud t&aumlhed: <b>"+letters_clicked.join(", ")+"</b><p>&Otildeiged olid: <b>"+correctLetters.join(", ")+"</b><br><b>"+incorrectLetters.join(", ")+"</b><br>&Otildeigete vastuste arv: <b>"+numberLettersCorrect+"</b><br>Valede vastuste arv: <b>"+numberLettersIncorrect+"</b></br><p>Korrektsus: <b>"+Math.round(recall_accuracy*100)+"%</b></p><p>***<p><b>Arvutamise tulemus: </b></p>Sulle esitati tehted: <br><b>" +displayedEqs.join("<br>")+" </b> <br> &Otildeiged vastused pidid olema: <b>"+required_Eq_Responses_trialx_labels.join(", ")+"</b> <br>Sinu vastused: <b>"+provided_Eq_Responses_trialx_labels.join(", ")+"</b><p>Korrektsus: <b>"+Math.round(accuracy*100)+"%</b><p>***</p><b>Kokkuv&otildete: </b>"+feedback+""}],
+			show_clickable_nav: true,
+			//pages: [ function(){return "<p><b>Recall task:</b><p>The presented letters were: <b>" +letters_trial_x.join(", ")+" </b> <br> Your choices were: <b>"+letters_clicked.join(", ")+"</b><p>Correct letters: <b>"+correctLetters.join(", ")+"</b><br>Incorrect letters (not presented, wrong position, or left out): <b>"+incorrectLetters.join(", ")+"</b><br>Number correct: <b>"+numberLettersCorrect+"</b><br>Number incorrect: <b>"+numberLettersIncorrect+"</b></br><p>Accuracy: <b>"+Math.round(recall_accuracy*100)+"%</b></p><p>***<p><b>Math task: </b></p>The presented equations were: <br><b>" +displayedEqs.join("<br>")+" </b> <br> Correct responses: <b>"+required_Eq_Responses_trialx_labels.join(", ")+"</b> <br>Your responses: <b>"+provided_Eq_Responses_trialx_labels.join(", ")+"</b><p>Accuracy: <b>"+Math.round(accuracy*100)+"%</b><p>***</p><b>Summary: </b>"+feedback+""}],
+			show_clickable_nav: true,
+	};
+	var feedback_SR_2 = {
+		type: 'instructions',
+		pages: [function(){if(successCountr==practiceCriterion){return "<p>***</p> <b>V&aumlga tubli!</b> <p>Oled l&aumlbinud viimase harjutamise ts&uumlkli ja saad alustada n&uuml&uumld p&aumlris test-&uumllesannet. <br><b></b>Kliki EDASI kui oled valmis alustama.<p>"}else{return "<p>***</p> Pead veel harjutama. Kliki EDASI, et alustada uut ts&uumlklit.<p>"}}],
+		show_clickable_nav: true,
+		//pages: [function(){if(successCountr==practiceCriterion){return "<p>***</p> <b>Very good!</b> <p>You have completed this final practice unit. You are ready to perform the whole Operation Span task. Click Next to start.<p>"}else{return "<p>***</p> You still need to complete "+(practiceCriterion-successCountr)+" practice trial(s). Click next to start a new one.<p>"}}],
+		show_clickable_nav: true,
+		on_finish: function(data) { 
+			i = 0
+			t_SetSize = getRndInteger(rangePracticeSetSize.min,rangePracticeSetSize.max)
+			// variables of solve task
+			required_Eq_Responses_trialx = []
+			provided_Eq_Responses_trialx = []
+			required_Eq_Responses_trialx_labels = []
+			provided_Eq_Responses_trialx_labels = []
+			numberEqsCorrect = 0
+			nEqs = t_SetSize
+			diff_level=diffLevel_practice
+			equations_and_responses_trialx = eqGenerator()
+			// variables of remember task
+			letters_trial_x = lettersFx();
+		},
+		
+	};
+	var SR_loop_practice2 = {
+		timeline: [SR_loop,recall,feedback_SR_0,feedback_SR_1,feedback_SR_2],
+		loop_function: function(data){
+				if(successCountr==practiceCriterion){
+		            return false;
+		        } else {
+		            return true;
+		        }
+		  },
+	};
+	
+/////////
+///////// Real trials 
+	var intro_realTrials = {
+			type: 'instructions',
+			pages: function(){return ["<p>***</p><b> Test. <br><b></b> Instruktioon:</b> N&uuml&uumld j&aumlrgneb tegelik m&aumllu-&uumllesanne, mis <br><b>(i)</b> koosneb "+trials.length+" ts&uumlklist, <br><b>(ii)</b> ts&uumlklite kestvus on erinev, varieerudes "+rangeOSpanSetSize.min+" kuni "+rangeOSpanSetSize.max+ " komponenti <br><b>(iii)</b> sinu tulemus kuvatakse alles k&otildeige l&otildepus<p><b>P&uuml&uumla olla nii t&aumlpne kui suudad!</b><p>***</p><p>Kliki <i>EDASI</i> kui oled valmis alustama."]},
+			show_clickable_nav: true,
+			on_finish: function(data) {
+				x = 0
+				i = 0
+				t_SetSize = trials_seq[x]
+				successCountr = 0
+				// variables of solve task
+				required_Eq_Responses_trialx = []
+				provided_Eq_Responses_trialx = []
+				required_Eq_Responses_trialx_labels = []
+				provided_Eq_Responses_trialx_labels = []
+				numberEqsCorrect = 0
+				nEqs = t_SetSize
+				diff_level=diffLevel_oSpan
+				equations_and_responses_trialx = eqGenerator()
+				// variables of remember task
+				letters_trial_x = lettersFx()
+				// final feedback
+				nLettersPresented_entTask = 0;
+				nLettersCorrect_entTask = 0;
+				nLettersIncorrect_entTask = 0;
+				nEqsPresented = 0;
+				nEqsCorrect = 0;
+			},
+	};
+	var feedback_progress = {
+		type: 'instructions',
+		pages: function(){if((x+1)<trials.length){return ["<p>***</p><p>Siiani on sul edukalt l&aumlbitud <b>"+(x+1)+"</b> ts&uumlkkel <b>"+trials.length+"</b> hulgast. </p>Kliki <i>EDASI</i>, et j&aumltkata."]}else{return["<p>***</p><b> </b><br><b></b>Suured t&aumlnud sinu panuse eest!<p>***</p><b>Sinu l&otildeplik tulemus</b><p></p><b>Arvutustes:</b><p>Sulle esitatud tehete arv: <b>"+(nEqsPresented+t_SetSize)+"</b><br>Vastasi &otildeigesti: <b>"+(nEqsCorrect+numberEqsCorrect)+"</b><br>Korrektsus: <b>"+ Math.round((nEqsCorrect+numberEqsCorrect)/(nEqsPresented+t_SetSize)*10000)/100+"%</b><p>***</p> <p> <b>Meenutamisel:</b><p>Sulle esitatud t&aumlhtede arv: <b>"+(nLettersPresented_entTask+t_SetSize)+"</b><br>Meenutasid &otildeigesti: <b>"+(nLettersCorrect_entTask+numberLettersCorrect)+"</b><br>Meenutasid valesti: <b>"+(nLettersIncorrect_entTask+numberLettersIncorrect)+"</b><br>Korrektsus: <b>"+Math.round((nLettersCorrect_entTask+numberLettersCorrect)/(nLettersCorrect_entTask+numberLettersCorrect+nLettersIncorrect_entTask+numberLettersIncorrect)*10000)/100+"%</b><p>***</p>V&aumlljumiseks kliki <i>EDASI</i>."]}},
+		show_clickable_nav: true,
+		data: function(){var solve_accuracy = numberEqsCorrect/t_SetSize;return{ displayedEqs: equations_and_responses_trialx.eq_array_display, required_Eq_Responses: required_Eq_Responses_trialx, provided_Eq_Responses: provided_Eq_Responses_trialx, nEqs: t_SetSize, nEqsCorrect: numberEqsCorrect, solve_accuracy: solve_accuracy, presentedItems: presentedItems, letters_clicked: letters_clicked, nLettersPresented: t_SetSize, nLettersCorrect: numberLettersCorrect, nLettersIncorrect: numberLettersIncorrect, recall_accuracy: recall_accuracy, summary: "summary_realTask"}},
+		on_finish: function(data) {
+			// for final feedback
+			nLettersPresented_entTask += t_SetSize
+			nLettersCorrect_entTask += numberLettersCorrect
+			nLettersIncorrect_entTask += numberLettersIncorrect
+			nEqsPresented += t_SetSize
+			nEqsCorrect += numberEqsCorrect
+			//
+			x += 1
+			i = 0
+			t_SetSize = trials_seq[x]
+			// variables of solve task
+			required_Eq_Responses_trialx = []
+			provided_Eq_Responses_trialx = []
+			required_Eq_Responses_trialx_labels = []
+			provided_Eq_Responses_trialx_labels = []
+			numberEqsCorrect = 0
+			nEqs = t_SetSize
+			diff_level = diffLevel_oSpan
+			equations_and_responses_trialx = eqGenerator()
+			// variables of remember task
+			letters_trial_x = lettersFx();
+		},
+	}
+	var oSpan_loop = {
+		timeline: [SR_loop,recall,feedback_progress],
+		loop_function: function(data){
+				if(x<trials.length){
+		            return true;
+		        } else {
+		            return false;
+		        }
+		  },
+	};
+			
+	jsPsych.init({
+		//timeline: [intro_solve_practice,solve_loop_practice2], // math practice
+		//timeline: [intro_recall_practice,recall_practice_loop2], // recall practice
+		//timeline: [intro_SR_practice,SR_loop_practice2], // math & recall practice
+		//timeline: [intro_realTrials,oSpan_loop], // real trials
+		timeline: [welcome, informedConsent, demographics, practice_overview,
+					intro_solve_practice,solve_loop_practice2,
+					intro_recall_practice,recall_practice_loop2,
+					intro_SR_practice,SR_loop_practice2,
+					intro_realTrials,oSpan_loop
+					],
+	   	fullscreen: true,
+	   	on_finish: function(data){
+	        jsPsych.data.localSave('myData_sendMeTo_pseiti@tlu.ee.txt', 'csv');
+	   }
+	});
+	
+	 /*pages: function(){return ["<p class='center-content'>It's time for the last practice unit, which is identical to the "+nTrials+" trials of the subsequent operation span task. <p class='center-content'> In each trial, the math and remember tasks alternate, and after a series of alternations, you will be asked to recall all the letters from the trial. <p class='center-content'>Again, being correct means that you click on the letter-buttons in the same order the letters appeared in the series. Any mistake counts as incorrect. Your Operation Span score will only be valid, if you are more than 85% accurate in judging the math problems, so try to answer all of those problems correctly while trying also to remember the order of the letters! <p class='center-content'>Click Next to start the last practice trial."]},*/
+		
+	</script>
+		
+</html>
